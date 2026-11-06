@@ -15,6 +15,47 @@ by the group on 2026-11-06. See the change history at the end.
 - **Context:** A European snack food manufacturer (anonymised). See
   `strategy-brief.md`.
 
+## Roadmap at a Glance
+
+```mermaid
+flowchart LR
+    subgraph NOW["NOW: actively working (committed learning)"]
+        direction TB
+        I04["<b>I04 Make the data ready</b><br/>Obj 3 · Confidence: Medium<br/>Pilot data failed → checking other product groups"]
+        I01["<b>I01 Safety stock in line with demand</b><br/>Obj 1 · Confidence: Low–Medium<br/>Learning only · AI or non-AI still open"]
+        I03["<b>I03 Ask finance: is there a need?</b><br/>Obj 2 · Confidence: Low (assumption)"]
+    end
+    subgraph NEXT["NEXT: likely, open questions"]
+        direction TB
+        I02["<b>I02 Stock ready for promotions and peaks</b><br/>Obj 1 · Confidence: Low–Medium<br/>PAUSED until the data gate is passed"]
+    end
+    subgraph LATER["LATER: options we watch"]
+        direction TB
+        L0["Empty<br/>(I03 advanced to Now)"]
+    end
+    subgraph OUT["NOT on this roadmap"]
+        direction TB
+        X["No IBP built from scratch<br/>No automatic orders<br/>No supplier or production planning<br/>No full rollout: one pilot first"]
+    end
+    I04 -- "data gate" --> I01
+    I04 -- "data gate" --> I02
+    I02 -. "may merge if the cause is stock parameters" .-> I01
+
+    classDef now fill:#E8F4EC,stroke:#3B8A5A,color:#172033;
+    classDef next fill:#FFF6E0,stroke:#B77A1F,color:#172033;
+    classDef paused fill:#F2F2F2,stroke:#888888,color:#555555,stroke-dasharray:4 3;
+    classDef later fill:#FFFFFF,stroke:#9BB8D2,color:#777777,stroke-dasharray:4 3;
+    classDef out fill:#FDECEC,stroke:#C0504D,color:#172033;
+    class I04,I01,I03 now;
+    class I02 paused;
+    class L0 later;
+    class X out;
+```
+
+**How to read it:** the columns show **confidence, not dates**. Arrows show
+dependencies: nothing uses predictions until the I04 data gate is passed. Every
+recommendation is approved by a person. Version v3, reference date 2026-11-06.
+
 ## Format Choice
 
 | Format | Fit | Reason |
