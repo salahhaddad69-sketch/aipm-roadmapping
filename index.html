@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Prediction Roadmap</title>
+<style>
+  :root {
+    --bg: #F6F7F9;
+    --surface: #FFFFFF;
+    --ink: #172033;
+    --ink-soft: #4A5568;
+    --ink-faint: #7A8699;
+    --line: #E2E6EC;
+
+    --now: #2F7D4F;      --now-bg: #EAF5EE;
+    --next: #B26B00;     --next-bg: #FFF5E3;
+    --later: #5B6B82;    --later-bg: #EEF1F5;
+    --out: #B23A3A;      --out-bg: #FCEEEE;
+
+    --obj1: #2563A6;     --obj1-bg: #E6EFF9;
+    --obj2: #7A3FA8;     --obj2-bg: #F2EAF8;
+    --obj3: #0E7C7B;     --obj3-bg: #E3F4F3;
+
+    --gate: #8A5A00;     --gate-bg: #FFF3D6;
+    --shadow: 0 1px 2px rgba(23,32,51,.06), 0 4px 14px rgba(23,32,51,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151C; --surface: #1A2029; --ink: #E8ECF2; --ink-soft: #B5BFCC; --ink-faint: #8792A2; --line: #2C3440;
+      --now: #5CC28A; --now-bg: #16291F; --next: #F0B04A; --next-bg: #2E2414; --later: #9AA8BC; --later-bg: #1F2630;
+      --out: #F08080; --out-bg: #2E1A1C;
+      --obj1: #7FB2EA; --obj1-bg: #182739; --obj2: #C49BE6; --obj2-bg: #261C33; --obj3: #5ED0CC; --obj3-bg: #142B2B;
+      --gate: #F0C060; --gate-bg: #2E2614; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151C; --surface: #1A2029; --ink: #E8ECF2; --ink-soft: #B5BFCC; --ink-faint: #8792A2; --line: #2C3440;
+    --now: #5CC28A; --now-bg: #16291F; --next: #F0B04A; --next-bg: #2E2414; --later: #9AA8BC; --later-bg: #1F2630;
+    --out: #F08080; --out-bg: #2E1A1C;
+    --obj1: #7FB2EA; --obj1-bg: #182739; --obj2: #C49BE6; --obj2-bg: #261C33; --obj3: #5ED0CC; --obj3-bg: #142B2B;
+    --gate: #F0C060; --gate-bg: #2E2614; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 32px 24px 48px; }
+
+  /* Header */
+  header { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+  h1 { font-size: 30px; line-height: 1.15; margin: 4px 0 6px; letter-spacing: -.01em; }
+  .sub { color: var(--ink-soft); max-width: 680px; margin: 0; }
+  .meta { display: grid; grid-template-columns: auto auto; gap: 4px 16px; font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; box-shadow: var(--shadow); }
+  .meta dt { color: var(--ink-faint); }
+  .meta dd { margin: 0; font-weight: 600; }
+
+  /* Banner + legend */
+  .banner { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .banner strong { color: var(--ink); }
+  .banner p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .obj { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .obj::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .obj1 { color: var(--obj1); background: var(--obj1-bg); }
+  .obj2 { color: var(--obj2); background: var(--obj2-bg); }
+  .obj3 { color: var(--obj3); background: var(--obj3-bg); }
+
+  /* Board */
+  .board { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 16px; align-items: start; }
+  .col { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  .col-head { padding: 14px 16px 12px; border-top: 5px solid; }
+  .col-now .col-head { border-color: var(--now); background: var(--now-bg); }
+  .col-next .col-head { border-color: var(--next); background: var(--next-bg); }
+  .col-later .col-head { border-color: var(--later); background: var(--later-bg); }
+  .col-head h2 { margin: 0; font-size: 20px; letter-spacing: .02em; display: flex; align-items: baseline; gap: 10px; }
+  .col-now h2 { color: var(--now); } .col-next h2 { color: var(--next); } .col-later h2 { color: var(--later); }
+  .col-head h2 span { font-size: 13px; font-weight: 500; color: var(--ink-soft); letter-spacing: 0; }
+  .col-head p { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-soft); }
+  .col-body { padding: 14px; display: grid; gap: 14px; }
+
+  /* Cards */
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 10px; padding: 14px 14px 12px; }
+  .card.o1 { --accent: var(--obj1); } .card.o2 { --accent: var(--obj2); } .card.o3 { --accent: var(--obj3); }
+  .card.paused { border-style: dashed; border-left-style: solid; opacity: .92; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .id { font-size: 12px; font-weight: 700; color: var(--ink-faint); letter-spacing: .04em; }
+  .status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 6px; }
+  .st-adapted { color: var(--now); background: var(--now-bg); }
+  .st-advanced { color: var(--obj1); background: var(--obj1-bg); }
+  .st-paused { color: var(--later); background: var(--later-bg); }
+  .card h3 { margin: 0 0 8px; font-size: 16px; line-height: 1.3; }
+  .card h3 small { display: block; font-weight: 500; font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+
+  .conf { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-soft); }
+  .dots { display: inline-flex; gap: 3px; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--ink-faint); display: block; }
+  .dots i.f { background: var(--ink-soft); border-color: var(--ink-soft); }
+  .dots i.h { background: linear-gradient(90deg, var(--ink-soft) 50%, transparent 50%); border-color: var(--ink-soft); }
+
+  dl.facts { margin: 0; display: grid; grid-template-columns: 92px 1fr; gap: 6px 10px; font-size: 13px; }
+  dl.facts dt { color: var(--ink-faint); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+  dl.facts dd { margin: 0; color: var(--ink-soft); }
+  dl.facts dd b { color: var(--ink); }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 11.5px; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--line); color: var(--ink-soft); background: var(--bg); }
+  .chip.gate { color: var(--gate); background: var(--gate-bg); border-color: transparent; font-weight: 600; }
+  .chip.dep { color: var(--ink); font-weight: 600; }
+  .chip.dep::before { content: "\2190  "; }
+
+  .empty { border: 1.5px dashed var(--line); border-radius: 10px; padding: 28px 16px; text-align: center; color: var(--ink-faint); font-size: 13.5px; }
+  .empty b { display: block; color: var(--ink-soft); font-size: 15px; margin-bottom: 4px; }
+
+  /* Dependency strip */
+  .deps { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-faint); font-weight: 700; margin: 0 0 12px; }
+  .dep-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .node { font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+  .node.n-now { border-color: var(--now); }
+  .node.n-paused { border-style: dashed; border-color: var(--later); color: var(--ink-soft); }
+  .arrow { font-size: 12px; color: var(--ink-faint); display: inline-flex; align-items: center; gap: 6px; }
+  .arrow::after { content: "\2192"; font-size: 18px; color: var(--ink-soft); }
+  .arrow.dashed::after { content: "\21E2"; }
+  .dep-group { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-right: 18px; margin-right: 4px; border-right: 1px solid var(--line); }
+  .dep-group:last-child { border-right: 0; }
+  .gate-note { font-size: 13px; color: var(--ink-soft); margin: 12px 0 0; }
+
+  /* Bottom grid */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .panel.out { border-top: 5px solid var(--out); }
+  .panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .panel li { font-size: 13.5px; }
+  .panel li b { display: block; color: var(--ink); }
+  .panel li span { color: var(--ink-soft); font-size: 13px; }
+  .panel.out li b::before { content: "\2715  "; color: var(--out); }
+  .lvl { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 1px 7px; border-radius: 5px; margin-bottom: 2px; }
+  .l-committed { color: var(--now); background: var(--now-bg); }
+  .l-explore { color: var(--next); background: var(--next-bg); }
+  .l-option { color: var(--later); background: var(--later-bg); }
+  .l-fixed { color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line); }
+
+  footer { margin-top: 20px; font-size: 12.5px; color: var(--ink-faint); display: grid; gap: 4px; }
+  footer b { color: var(--ink-soft); }
+
+  @media (max-width: 1000px) {
+    .board, .grid3 { grid-template-columns: 1fr; }
+    .dep-group { border-right: 0; padding-right: 0; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 20px 16px 32px; }
+    h1 { font-size: 24px; }
+    dl.facts { grid-template-columns: 1fr; gap: 2px; }
+    dl.facts dd { margin-bottom: 6px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .wrap { padding: 0; max-width: none; }
+    .col, .panel, .deps, .banner, .meta { box-shadow: none; }
+    .card, .panel { break-inside: avoid; }
+    @page { size: A4 landscape; margin: 12mm; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow">Product Roadmap · Version v3</div>
+      <h1>Inventory Prediction Roadmap</h1>
+      <p class="sub">How better inventory prediction, added to the existing ERP/IBP system, could reduce stockouts and excess stock. It shows what is known, what is uncertain, and what could change the direction. AI is one candidate approach; whether it is needed is decided after the learning steps.</p>
+    </div>
+    <dl class="meta">
+      <dt>Audience</dt><dd>Head of Supply Chain and CFO</dd>
+      <dt>Decision owner</dt><dd>Head of Supply Chain</dd>
+      <dt>Reference date</dt><dd>2026-11-06</dd>
+      <dt>Context</dt><dd>European snack food manufacturer (anonymised)</dd>
+    </dl>
+  </header>
+
+  <div class="banner">
+    <p><strong>Columns show confidence, not dates.</strong> "Next" does not mean "next quarter". Items do not move left automatically: new evidence can advance, pause, merge, or remove them.</p>
+    <div class="legend" aria-label="Objectives">
+      <span class="obj obj1">Obj 1 · Reduce both stockouts and excess stock</span>
+      <span class="obj obj2">Obj 2 · Give finance visibility of inventory value and risk</span>
+      <span class="obj obj3">Obj 3 · Make data quality reliable enough for AI predictions</span>
+    </div>
+  </div>
+
+  <main class="board">
+
+    <!-- NOW -->
+    <section class="col col-now" aria-labelledby="h-now">
+      <div class="col-head">
+        <h2 id="h-now">NOW <span>actively working</span></h2>
+        <p><b>Entry:</b> the problem is understood, evidence is available, and an owner and next step are clear. <b>Exit:</b> the outcome signal has been reviewed → continue, adapt, or stop.</p>
+      </div>
+      <div class="col-body">
+
+        <article class="card o3">
+          <div class="card-top"><span class="id">I04</span><span class="status st-adapted">Adapted</span></div>
+          <h3>Make the data ready for inventory prediction</h3>
+          <div class="row">
+            <span class="obj obj3">Obj 3</span>
+            <span class="conf">Confidence: <b>Medium</b> <span class="dots" aria-hidden="true"><i class="f"></i><i class="f"></i><i></i></span></span>
+          </div>
+          <dl class="facts">
+            <dt>Outcome</dt><dd>Data for the pilot passes an agreed quality gate</dd>
+            <dt>Evidence</dt><dd>F04 (S01), confirmed by F08 (S04, scenario)</dd>
+            <dt>Owner</dt><dd>ERP/IT Lead</dd>
+            <dt>Gates</dt><dd class="chips"><span class="chip">IT / ERP team</span><span class="chip gate">Gate: IT security and data access approval</span><span class="chip gate">Gate: data quality before predictions are used (criteria still unknown)</span></dd>
+            <dt>Next</dt><dd>The first pilot group <b>failed</b> the data check (F08). Next step: check whether another product group has better data, and switch the pilot if so.</dd>
+          </dl>
+        </article>
+
+        <article class="card o1">
+          <div class="card-top"><span class="id">I01</span><span class="status st-adapted">Adapted</span></div>
+          <h3>Keep safety stock and reorder points in line with real demand</h3>
+          <div class="row">
+            <span class="obj obj1">Obj 1</span>
+            <span class="conf">Confidence: <b>Low–Medium</b> <span class="dots" aria-hidden="true"><i class="f"></i><i class="h"></i><i></i></span></span>
+          </div>
+          <dl class="facts">
+            <dt>Outcome</dt><dd>Stock levels follow real demand, giving fewer stockouts <b>and</b> less excess stock in the pilot</dd>
+            <dt>Evidence</dt><dd>F03, F05 (S01, S03)</dd>
+            <dt>Owner</dt><dd>Inventory Manager</dd>
+            <dt>Gates</dt><dd class="chips"><span class="chip dep">Depends on I04</span><span class="chip gate">Gate: a person approves every change</span></dd>
+            <dt>Next</dt><dd><b>Only learning that needs no data continues:</b> the current parameter process and why the plan does not turn into inventory actions (O05). <b>The approach decision (AI or non-AI) is paused</b> until the I04 gate is passed.</dd>
+          </dl>
+        </article>
+
+        <article class="card o2">
+          <div class="card-top"><span class="id">I03</span><span class="status st-advanced">Advanced from Later</span></div>
+          <h3>Give finance an early view of future inventory value and risk<small>Limited to confirming the need</small></h3>
+          <div class="row">
+            <span class="obj obj2">Obj 2</span>
+            <span class="conf">Confidence: <b>Low</b>, assumption only <span class="dots" aria-hidden="true"><i class="f"></i><i></i><i></i></span></span>
+          </div>
+          <dl class="facts">
+            <dt>Outcome</dt><dd>Finance can act early on inventory value and risk</dd>
+            <dt>Evidence</dt><dd>Assumption only</dd>
+            <dt>Owner</dt><dd>Finance contact (to be named by the CFO)</dd>
+            <dt>Depends</dt><dd class="chips"><span class="chip">Input from finance</span></dd>
+            <dt>Next</dt><dd><b>Only "ask finance whether the need exists" is in Now.</b> If there is no need, remove I03. Building anything stays an option.</dd>
+          </dl>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- NEXT -->
+    <section class="col col-next" aria-labelledby="h-next">
+      <div class="col-head">
+        <h2 id="h-next">NEXT <span>likely, open questions</span></h2>
+        <p><b>Entry:</b> strategic fit and a credible opportunity exist, but the cause, dependencies, or approach are still open. <b>Exit:</b> ready to move to Now, deferred, or rejected.</p>
+      </div>
+      <div class="col-body">
+
+        <article class="card o1 paused">
+          <div class="card-top"><span class="id">I02</span><span class="status st-paused">Paused</span></div>
+          <h3>Get stock ready in time for promotions and seasonal peaks</h3>
+          <div class="row">
+            <span class="obj obj1">Obj 1</span>
+            <span class="conf">Confidence: <b>Low–Medium</b> <span class="dots" aria-hidden="true"><i class="f"></i><i class="h"></i><i></i></span></span>
+          </div>
+          <dl class="facts">
+            <dt>Outcome</dt><dd>Fewer stockouts during peaks and less leftover stock afterwards</dd>
+            <dt>Evidence</dt><dd>F06 (S03)</dd>
+            <dt>Owner</dt><dd>Not assigned yet</dd>
+            <dt>Depends</dt><dd class="chips"><span class="chip dep">Depends on I04</span><span class="chip">Promotion data from sales</span></dd>
+            <dt>Next</dt><dd><b>Paused</b> until the I04 gate is passed. Then: find the cause of the peak problems. If the cause is parameters, <b>may merge with I01</b>. If the cause is outside inventory, stop.</dd>
+          </dl>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- LATER -->
+    <section class="col col-later" aria-labelledby="h-later">
+      <div class="col-head">
+        <h2 id="h-later">LATER <span>options we watch</span></h2>
+        <p><b>Entry:</b> a relevant strategic option or assumption is recorded. <b>Exit:</b> review trigger reached → advance, keep, or remove.</p>
+      </div>
+      <div class="col-body">
+        <div class="empty"><b>Empty</b>I03 advanced to Now in v3 (only "ask finance whether the need exists").</div>
+      </div>
+    </section>
+
+  </main>
+
+  <section class="deps" aria-labelledby="h-deps">
+    <h2 class="section-title" id="h-deps">Dependencies and gates</h2>
+    <div class="dep-flow">
+      <div class="dep-group">
+        <span class="node n-now">I04 Data ready</span>
+        <span class="arrow">data gate</span>
+        <span class="node n-now">I01 Safety stock</span>
+      </div>
+      <div class="dep-group">
+        <span class="node n-now">I04 Data ready</span>
+        <span class="arrow">data gate</span>
+        <span class="node n-paused">I02 Promotions and peaks</span>
+      </div>
+      <div class="dep-group">
+        <span class="node n-paused">I02 Promotions and peaks</span>
+        <span class="arrow dashed">may merge if the cause is stock parameters</span>
+        <span class="node n-now">I01 Safety stock</span>
+      </div>
+    </div>
+    <p class="gate-note"><b>Capacity:</b> Now holds three items, but two are reduced to small learning tasks (I01 learning that needs no data; I03 asking finance). The main effort is I04. <b>Owners</b> are proposed roles, not confirmed people. The Head of Supply Chain confirms them.</p>
+  </section>
+
+  <div class="grid3">
+    <section class="panel out" aria-labelledby="h-out">
+      <h2 class="section-title" id="h-out">Not on this roadmap</h2>
+      <ul>
+        <li><b>Developing an IBP system from scratch</b><span>The existing planning capability is kept and extended</span></li>
+        <li><b>Automatic purchase orders</b><span>The AI or tool only suggests, and a person approves every order</span></li>
+        <li><b>Supplier and production planning</b><span>Out of scope for now, to keep the focus on inventory</span></li>
+        <li><b>Full rollout to all plants or product groups</b><span>Start with one plant or product group, and learn before scaling</span></li>
+        <li><b>Using vendor figures (S02) as targets</b><span>They are unverified marketing claims</span></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="h-commit">
+      <h2 class="section-title" id="h-commit">Commitment levels</h2>
+      <ul>
+        <li><span class="lvl l-committed">Committed</span><b>I04 (checking alternative product groups and data assessment); I01 learning that needs no data; I03 asking finance about the need</b><span>Subject to capacity approval by the Head of Supply Chain</span></li>
+        <li><span class="lvl l-explore">Exploratory · paused</span><b>The I01 solution approach (AI or non-AI)</b><span>Decided only after the I04 data gate is passed</span></li>
+        <li><span class="lvl l-explore">Exploratory · paused</span><b>I02</b><span>Paused until the I04 gate is passed</span></li>
+        <li><span class="lvl l-option">Option</span><b>Building anything for I03</b><span>Only if finance confirms the need</span></li>
+        <li><span class="lvl l-fixed">Fixed</span><b>None</b><span>There are no fixed dates or external obligations</span></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="h-unk">
+      <h2 class="section-title" id="h-unk">Open unknowns and decision triggers</h2>
+      <ul>
+        <li><b>Which plant or product group is the pilot (the first choice failed the data check)</b><span>Chosen after checking alternative product groups in I04</span></li>
+        <li><b>Whether any product group has data good enough for prediction</b><span>I04 data check results</span></li>
+        <li><b>The data quality gate's criteria and who approves them</b><span>Agreed with the ERP/IT Lead during I04</span></li>
+        <li><b>Team capacity and budget</b><span>Head of Supply Chain approval before work starts</span></li>
+        <li><b>Whether AI is needed, or a simpler method is enough</b><span>After the I01 learning step</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    <div><b>No delivery dates are given. No outcome targets are set until baselines exist.</b></div>
+    <div><b>v3 change:</b> scenario event S04 (fictional): the pilot data failed the quality check. I04 and I01 were adapted, I02 was paused, and I03 "ask finance" was advanced from Later to Now. See roadmap-review.md.</div>
+    <div>Source of truth: roadmap.md. Evidence IDs (S, F, O) refer to evidence-map.md.</div>
+  </footer>
+
+</div>
+</body>
+</html>
